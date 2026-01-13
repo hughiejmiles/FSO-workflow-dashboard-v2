@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSO Training Product Development Workflow Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #17396F;
+            color: white;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .color-key {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .color-key h3 {
+            margin-bottom: 15px;
+            color: #17396F;
+        }
+
+        .color-samples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .color-sample {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+        }
+
+        .workflow-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .workflow-stages {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .workflow-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stage-box {
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            flex: 1;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stage-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .stage-box h3 {
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .stage-box p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stage-start { background: #4CAF50; color: white; }
+        .stage-preliminary { background: #FFC107; color: #333; }
+        .stage-external { background: #2196F3; color: white; }
+        .stage-internal { background: #9C27B0; color: white; }
+        .stage-convergence { background: #F44336; color: white; }
+        .stage-final { background: #4CAF50; color: white; }
+
+        .arrow {
+            font-size: 2em;
+            color: #17396F;
+        }
+
+        .parallel-container {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .stage-detail {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stage-detail.active {
+            display: block;
+        }
+
+        .stage-header {
+            background: #17396F;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+
+        .stage-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .stage-header p {
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #17396F;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #EA9B3A;
+            font-size: 1.3em;
+        }
+
+        .section h4 {
+            color: #17396F;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #EAEAEA;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #FF4200;
+        }
+
+        .content-box {
+            background: #FAFAFA;
+            padding: 20px;
+            border-radius: 4px;
+            border-left: 4px solid #EA9B3A;
+            margin-bottom: 15px;
+        }
+
+        .content-box p {
+            margin-bottom: 10px;
+        }
+
+        .content-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-box strong {
+            color: #17396F;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .quality-criteria {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quality-item {
+            background: #F0F8FF;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #4CAF50;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .quality-item::before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #17396F;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #FF4200;
+        }
+
+        button.secondary {
+            background: #EA9B3A;
+        }
+
+        button.secondary:hover {
+            background: #FF4200;
+        }
+
+        .back-to-overview {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        @media print {
+            .nav-buttons, .back-to-overview {
+                display: none;
+            }
+            .stage-detail {
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .workflow-row {
+                flex-direction: column;
+            }
+            .parallel-container {
+                flex-direction: column;
+            }
+            .quality-criteria {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FSO Training Product Development Workflow Dashboard</h1>
+            <p>Interactive system for managing Units of Competency development across 6 workflow stages</p>
+        </header>
+
+        <div class="color-key">
+            <h3>Workflow Stage Colour Key</h3>
+            <div class="color-samples">
+                <div class="color-sample">
+                    <div class="color-box" style="background: #4CAF50;"></div>
+                    <span>Start/End Stages</span>
+                </div>
+                <div class="color-sample">
+                    <div class="color-box" style="background: #FFC107;"></div>
+                    <span>Preliminary Decision Point</span>
+                </div>
+                <div class="color-sample">
+                    <div class="color-box" style="background: #2196F3;"></div>
+                    <span>External Path (Industry-Led)</span>
+                </div>
+                <div class="color-sample">
+                    <div class="color-box" style="background: #9C27B0;"></div>
+                    <span>Internal Path (FSO-Led)</span>
+                </div>
+                <div class="color-sample">
+                    <div class="color-box" style="background: #F44336;"></div>
+                    <span>Mandatory Convergence Gate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-diagram" id="workflowOverview">
+            <h2 style="margin-bottom: 20px; color: #17396F;">Training Product Development Workflow</h2>
+            <div class="workflow-stages">
+                <div class="workflow-row">
+                    <div class="stage-box stage-preliminary" onclick="showStage('stage1')">
+                        <h3>Stage 1</h3>
+                        <p>Scoping & Concept Development</p>
+                        <small>Preliminary decision point</small>
+                    </div>
+                </div>
+                <div class="workflow-row">
+                    <div class="arrow">↓</div>
+                </div>
+                <div class="workflow-row">
+                    <div class="parallel-container">
+                        <div class="stage-box stage-external" onclick="showStage('stage2a')">
+                            <h3>Stage 2A</h3>
+                            <p>External Scoping</p>
+                            <small>Industry-led workshops</small>
+                        </div>
+                        <div class="stage-box stage-internal" onclick="showStage('stage2b')">
+                            <h3>Stage 2B</h3>
+                            <p>Internal Scoping</p>
+                            <small>Writing team-led</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-row">
+                    <div class="arrow">↓</div>
+                </div>
+                <div class="workflow-row">
+                    <div class="parallel-container">
+                        <div class="stage-box stage-external" onclick="showStage('stage3a')">
+                            <h3>Stage 3A</h3>
+                            <p>External Drafting</p>
+                            <small>External consultants</small>
+                        </div>
+                        <div class="stage-box stage-internal" onclick="showStage('stage3b')">
+                            <h3>Stage 3B</h3>
+                            <p>Internal Drafting</p>
+                            <small>Writing team authors</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-row">
+                    <div class="arrow">↓</div>
+                </div>
+                <div class="workflow-row">
+                    <div class="stage-box stage-convergence" onclick="showStage('stage4')">
+                        <h3>Stage 4</h3>
+                        <p>QA & Compliance</p>
+                        <small>Mandatory convergence point</small>
+                    </div>
+                </div>
+                <div class="workflow-row">
+                    <div class="arrow">↓</div>
+                </div>
+                <div class="workflow-row">
+                    <div class="stage-box stage-final" onclick="showStage('stage5')">
+                        <h3>Stage 5</h3>
+                        <p>Finalisation & Readiness</p>
+                        <small>Validation, submission, release</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 1 -->
+        <div id="stage1" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 1: Scoping & Concept Development</h2>
+                <p>Preliminary decision point - determines External vs Internal path</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage1-memory">Trigger context: [What prompted this work - legislation, industry feedback, framework evolution]
+Sector type: [Digital, Finance, ICT/Telco, or other]
+Scale assessment: [Single unit, major package update, new qualification]
+Stakeholder landscape: [Key industry bodies, regulators, RTOs involved]
+Timeline constraints: [DEWR milestones, regulatory deadlines, industry needs]
+Path decision rationale: [Why External or Internal path chosen]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage1-instructions">Analyse triggers and evidence to determine:
+1. Is this genuinely needed? (regulatory requirement, skills gap, framework evolution)
+2. What's the appropriate scale? (new units, updates, deletions)
+3. External or Internal path? (based on scope, expertise, timeline)
+4. Initial risk assessment
+5. Preliminary structure and resource requirements
+
+Decision Framework:
+- Use EXTERNAL when: Scope very large (200+ units), deep sector expertise not in-house, independent validation needed, comprehensive stakeholder consultation required
+- Use INTERNAL when: Framework translation is core work (DigComp→VET, ASFI→VET), internal expertise sufficient, iterative refinement preferred, strategic pivoting flexibility important</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Determine IF and HOW to proceed with training product development</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Trigger event (legislation, industry feedback, framework update)</li>
+                        <li>Initial stakeholder input</li>
+                        <li>Enrolment data (for updates)</li>
+                        <li>Regulatory context</li>
+                        <li>Strategic priorities from DEWR or FSO Leadership</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Decision: Proceed (External/Internal) or Don't Proceed</li>
+                        <li>Preliminary scope document</li>
+                        <li>Risk assessment with mitigation strategies</li>
+                        <li>Resource plan and timeline</li>
+                        <li>Stakeholder engagement strategy</li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Wrong path chosen (should be External but goes Internal, or vice versa)</li>
+                        <li>Insufficient evidence gathered to support decisions</li>
+                        <li>Scope too broad or too narrow for allocated resources</li>
+                        <li>Stakeholder misalignment from start</li>
+                        <li>Framework updates not monitored (proceeding with outdated frameworks)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF requirements and compliance framework</li>
+                    <li>AQF Handbook (Levels 2-5) - understanding of level descriptors</li>
+                    <li>Training Package Products Policy</li>
+                    <li>RTO Standards 2025 - assessment and delivery requirements</li>
+                    <li>Assessment Principles and Rules of Evidence</li>
+                    <li>Australian Government Style Manual - Plain English and accessibility</li>
+                    <li>NCVER enrolment data interpretation</li>
+                    <li>DEWR process requirements and milestone frameworks</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Sector-specific frameworks (DigComp 3.0, ASFI Capability Framework, ACMA standards)</li>
+                    <li>Regulatory landscape understanding (ASIC/APRA for finance, ACMA for telco)</li>
+                    <li>International framework comparison and adaptation</li>
+                    <li>Technology evolution tracking in relevant sector</li>
+                    <li>Workforce projections and labour market analysis</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF template requirements and structure specifications</li>
+                    <li>AQF Level Descriptors (Levels 2-5) - detailed characteristics</li>
+                    <li>Training Package Products Policy (current version)</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles (Validity, Reliability, Fairness, Flexibility)</li>
+                    <li>Rules of Evidence (Sufficiency, Authenticity, Currency)</li>
+                    <li>NCVER Statistics access and interpretation guides</li>
+                    <li>DEWR Activity Proposal templates and submission requirements</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Current legislation/regulatory documents (sector-specific - e.g., Treasury Laws Amendment Act, ACMA Cabling Provider Rules)</li>
+                    <li>Industry reports and workforce projections</li>
+                    <li>Job task analysis and role descriptions</li>
+                    <li>Professional body requirements (CPA Australia, CA ANZ, CFA Institute, etc.)</li>
+                    <li>International framework comparisons (Singapore, Ireland, UK approaches)</li>
+                    <li>Existing training product analysis (current units, qualifications, skill sets)</li>
+                    <li>Superseded unit lists and mapping</li>
+                    <li>Overlap analysis (e.g., UEE/ICT unit duplication)</li>
+                    <li>Previous consultation feedback and validation records</li>
+                    <li>AISC deleted units review (for potential reinstatement)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">Clear evidence-based rationale (not just "someone asked for it")</div>
+                    <div class="quality-item">Strategic framework thinking (fits broader system, not isolated)</div>
+                    <div class="quality-item">Stakeholder alignment secured early</div>
+                    <div class="quality-item">Realistic resource/timeline planning</div>
+                    <div class="quality-item">Risk assessment with mitigation strategies</div>
+                    <div class="quality-item">Clear path decision with justification</div>
+                    <div class="quality-item">Compliance mapping upfront</div>
+                    <div class="quality-item">Framework currency verified (not using outdated versions)</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage2a')" class="secondary">Next: External Scoping →</button>
+                <button onclick="showStage('stage2b')" class="secondary">Next: Internal Scoping →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 2A -->
+        <div id="stage2a" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 2A: External Scoping</h2>
+                <p>Industry-led workshops, writing team supports</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage2a-memory">Trigger and rationale from Stage 1: [Summary of decision to use external path]
+External consultant/partner details: [Organisation name, key contacts, expertise areas]
+Industry stakeholder list: [Industry bodies, RTOs, SMEs, employers consulted]
+Consultation schedule: [Workshop dates, validation sessions, feedback deadlines]
+Workshop outputs: [Key findings, recommendations, categorisation decisions]
+Decision framework: [R68-R78 style categorisation - Retain/Delete/Update/Further Consultation]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage2a-instructions">Support external consultant-led scoping by:
+1. Providing briefing materials (current units, enrolment data, regulatory docs)
+2. Clarifying FSO quality standards and compliance requirements
+3. Participating in validation activities without leading direction
+4. Receiving and processing recommendations systematically
+5. Preparing for implementation of external consultant recommendations
+
+Role Boundaries:
+- External Consultant: Leads scoping, conducts stakeholder consultation, makes recommendations
+- Writing Team: Provides context, participates in validation, receives recommendations
+- Integration Writing Team: Implements recommendations, coordinates with external specialist writers
+- Project Team: Organises workshops, manages consultation logistics, maintains consultation log</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Support industry expert to scope training product updates/development</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Initial scope from Stage 1</li>
+                        <li>Current training products (units, qualifications, skill sets)</li>
+                        <li>Enrolment/usage data (NCVER Statistics 2019-2024)</li>
+                        <li>Regulatory/compliance documentation</li>
+                        <li>Stakeholder list and consultation framework</li>
+                        <li>Historical consultation feedback</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Comprehensive scoping report from external consultant</li>
+                        <li>Categorised recommendations (Retain/Delete/Update/Further Consultation with action codes)</li>
+                        <li>Evidence base for all decisions</li>
+                        <li>Supporting documentation (e.g., 14 attachments for ICT Telco: Qual/SS/UoC Summary Matrix, Feedback Log, Superseded UoCs, AISC Deleted Units, Regulatory Requirements, Learning Pathways, Access & Equity Coverage, Sample UoCs, Design Considerations, Trial Qualifications, Industry Materials)</li>
+                        <li>Action plan with responsibility assignment (Integration Team vs External Writers vs Project Team)</li>
+                        <li>Integration Writing Team implementation brief</li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Insufficient briefing to external consultant</li>
+                        <li>Missing regulatory/framework documentation</li>
+                        <li>Wrong SMEs consulted (general practitioners instead of specific capability experts)</li>
+                        <li>Recommendations not actionable or unclear</li>
+                        <li>Unclear responsibility assignment between teams</li>
+                        <li>Contradictory feedback not resolved (requires "Further Consultation" category)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF template requirements and structure</li>
+                    <li>AQF level descriptors and expectations</li>
+                    <li>Training Package compliance standards</li>
+                    <li>FSO brand guidelines (Montserrat typography, colour palette, Australian English)</li>
+                    <li>Assessment principles (validity, reliability, fairness, flexibility)</li>
+                    <li>Stakeholder coordination and consultation protocols</li>
+                    <li>Consultation log maintenance and synthesis</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Sector frameworks (ACMA standards for telco, ASFI for finance, DigComp for digital capability)</li>
+                    <li>Regulatory compliance expertise (sector-specific - ACMA, ASIC, APRA)</li>
+                    <li>Industry stakeholder landscape understanding</li>
+                    <li>Technology currency assessment (what's current vs emerging vs outdated)</li>
+                    <li>Cross-JSC coordination (e.g., UEE/ICT overlap requiring PSO consultation)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF requirements and template specifications</li>
+                    <li>AQF Handbook (relevant levels)</li>
+                    <li>Training Package Products Policy</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles and Rules of Evidence</li>
+                    <li>FSO brand guidelines and style requirements</li>
+                    <li>Current training products (units, qualifications, skill sets for review)</li>
+                    <li>Consultation log template and protocols</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Sector regulatory documents (e.g., ACMA Cabling Provider Rules 2025 + Explanatory Statement for ICT Telco)</li>
+                    <li>Australian Standards (sector-specific - e.g., S009 ES1/ES2/ES3 for telco)</li>
+                    <li>Industry reports and technology roadmaps (5G, IoT, AI, LEOS for telco; ISSB, TCFD, TNFD for finance)</li>
+                    <li>Enrolment data analysis (NCVER Statistics showing zero enrolments, usage patterns)</li>
+                    <li>Superseded unit lists and replacement mapping</li>
+                    <li>AISC deleted units review (for potential reinstatement consideration)</li>
+                    <li>Overlap analysis documentation (e.g., 19 UEE units overlapping with 18 ICT units)</li>
+                    <li>Access and equity documentation and current coverage analysis</li>
+                    <li>Learning pathway analysis and qualification packaging structures</li>
+                    <li>Sample UoCs with wording analysis</li>
+                    <li>Design and structural considerations (TPOF Reform implications)</li>
+                    <li>Victorian trial qualifications or state-specific training products (where relevant)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">External consultant properly briefed with comprehensive materials</div>
+                    <div class="quality-item">All relevant stakeholders consulted (Industry, RTO, SME)</div>
+                    <div class="quality-item">Clear categorisation framework applied (R/D/U/FC with rationale)</div>
+                    <div class="quality-item">Evidence-backed recommendations (not just opinions)</div>
+                    <div class="quality-item">Actionable implementation plan with specific steps</div>
+                    <div class="quality-item">Responsibility assignment clear (Integration vs External Writers vs Project Team)</div>
+                    <div class="quality-item">Supporting documentation comprehensive and organised</div>
+                    <div class="quality-item">Contradictory feedback identified and resolution pathway clear</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage1')">← Previous: Scoping & Concept</button>
+                <button onclick="showStage('stage3a')" class="secondary">Next: External Drafting →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 2B -->
+        <div id="stage2b" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 2B: Internal Scoping</h2>
+                <p>Writing team-led, Technical Committee validates</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage2b-memory">Trigger and rationale from Stage 1: [Why internal path chosen over external]
+Framework translation approach: [e.g., DigComp 3.0 → VET, ASFI Capability Framework → VET]
+Unit structure decisions: [Generalist/Progressive/Targeted models, pathway logic]
+Consolidation rationale and coding systems: [K1-K13, S1-S6, PE1-PE4 approach]
+Technical Committee feedback patterns: [Common themes, systematic improvements]
+Quality evolution across iterations: ["lego to duplo" refinement, learning transfer]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage2b-instructions">Lead internal scoping by:
+1. Analysing source framework(s) for VET translation (DigComp, ASFI, etc.)
+2. Defining unit structure and pathway logic (linear, progressive, targeted models)
+3. Determining AQF level placement with clear justification
+4. Establishing quality criteria and methodology upfront
+5. Documenting development approach systematically
+6. Securing Technical Committee validation early and iteratively
+
+Framework Translation Principles:
+- Systematic adaptation (not just copying international frameworks)
+- "Lego to duplo" simplification without losing functionality
+- Transparent mapping (assessors can see framework connections)
+- Complete coverage without unintended duplication
+- Cross-sector applicability where appropriate
+
+Decision Authority:
+- FSO Writing Team: Drives scoping decisions, defines methodology
+- Technical Committee: Validates framework expertise, provides systematic feedback
+- Strategy & Planning: Monitors for framework updates
+- Leadership Team: Resolves terminology conflicts, makes strategic pivots</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Translate industry/international framework into structured VET training product plan</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Initial scope from Stage 1</li>
+                        <li>Complete framework specifications (DigComp 3.0, ASFI Capability Framework, DEC AI Literacy, Cybersecurity Skills Framework)</li>
+                        <li>VET compliance requirements (TPOF, AQF, Training Package Products Policy)</li>
+                        <li>DEWR Activity Proposal approved with milestone framework</li>
+                        <li>Strategic context (Purpose 1/2/3 qualification types, cross-sector needs, RPL requirements)</li>
+                        <li>Previous framework versions (for understanding transition rationale)</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Complete unit structure (all unit codes, titles, application descriptions)</li>
+                        <li>Development matrices (showing all units across levels and competence areas)</li>
+                        <li>Framework mapping logic (how source framework translates to VET units)</li>
+                        <li>Phased development plan (e.g., Foundation → Intermediate → Advanced → Highly Specialised)</li>
+                        <li>Quality assurance approach and criteria</li>
+                        <li>Project Brief or Overview Document (comprehensive 18+ page presentation)</li>
+                        <li>Risk management plan with mitigation strategies</li>
+                        <li>Consolidation rationale documentation (explaining reduction from 80 elements to 39 units)</li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Framework translation logic unclear or arbitrary</li>
+                        <li>AQF placement inappropriate for actual complexity</li>
+                        <li>Unit structure doesn't support clear pathways</li>
+                        <li>Quality criteria not defined before drafting begins</li>
+                        <li>Development methodology not systematic (leads to inconsistency)</li>
+                        <li>Framework updates occur mid-development without strategic pause</li>
+                        <li>Multi-framework integration logic unclear (e.g., 80% DigComp + 20% AI + 20% Cybersecurity)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF ASK template mastery - structure, requirements, compliance</li>
+                    <li>AQF Level Descriptors deep knowledge (Levels 2-5) - autonomy, complexity, depth/breadth characteristics</li>
+                    <li>Training Package Products Policy compliance</li>
+                    <li>Assessment principles and Rules of Evidence deep understanding</li>
+                    <li>Framework analysis and systematic translation capability</li>
+                    <li>Systematic simplification ("lego to duplo" methodology)</li>
+                    <li>Iterative refinement and quality evolution tracking</li>
+                    <li>Change register documentation rigour</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Source framework deep expertise (DigComp 3.0 structure and proficiency levels, ASFI Capability Framework five core capabilities)</li>
+                    <li>Multi-framework integration (when combining DigComp + AI Literacy + Cybersecurity, or ASFI + ISSB + TCFD + TNFD)</li>
+                    <li>Cross-sector contextualisation (healthcare, construction, retail, hospitality, manufacturing, education for digital; banking, investment, insurance, accounting for finance)</li>
+                    <li>RPL pathway design (vertical progressive units, flexible entry/exit points)</li>
+                    <li>Attitudes integration (converting framework attitudes to observable VET Skills at higher levels)</li>
+                    <li>First Nations co-design protocols (when relevant - Sustainable Finance example)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF ASK template requirements and detailed specifications</li>
+                    <li>AQF Handbook (Levels 2-5) - comprehensive level descriptors</li>
+                    <li>Training Package Products Policy (current version)</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles (Validity, Reliability, Fairness, Flexibility)</li>
+                    <li>Rules of Evidence (Sufficiency, Authenticity, Currency)</li>
+                    <li>Australian Government Style Manual - Plain English and accessibility</li>
+                    <li>FSO brand guidelines (Montserrat, colour palette, Australian English)</li>
+                    <li>FSO glossary (when comprehensive version developed)</li>
+                    <li>Change register template</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Complete framework specifications:
+                        <ul>
+                            <li>Digital projects: DigComp 3.0 complete specification (all elements, proficiency descriptors), DEC AI Literacy Framework (five dimensions), Cybersecurity Skills Framework</li>
+                            <li>Finance projects: ASFI Capability Framework (complete), ISSB Standards (IFRS S1, S2), TCFD Recommendations, TNFD Framework</li>
+                        </ul>
+                    </li>
+                    <li>International framework comparisons (Singapore, Ireland, UK approaches for benchmarking)</li>
+                    <li>DEWR Activity Proposal (approved scope and milestone requirements)</li>
+                    <li>Purpose 1/2/3 qualification guidelines (design implications for different qualification types)</li>
+                    <li>Cross-sector application examples (industry-specific contextualisation)</li>
+                    <li>Target qualification packaging rules (which qualifications will include these units)</li>
+                    <li>Previous framework versions (e.g., DigComp 2.2 for understanding transition to 3.0)</li>
+                    <li>Regulatory documentation (sector-specific):
+                        <ul>
+                            <li>Finance: Treasury Laws Amendment Act, ASRS, ASIC guidance, APRA CPS 229</li>
+                            <li>Digital: Qualification reform requirements, cross-sector VET standards</li>
+                        </ul>
+                    </li>
+                    <li>Framework comparison tables and mapping matrices</li>
+                    <li>Consolidation ratio documentation (showing systematic reduction approach)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">Clear evidence-based rationale for all structural decisions</div>
+                    <div class="quality-item">Systematic framework translation (transparent, defensible methodology)</div>
+                    <div class="quality-item">Comprehensive coverage without duplication</div>
+                    <div class="quality-item">Appropriate AQF placement with justification</div>
+                    <div class="quality-item">Logical pathway structure (clear progression, entry/exit flexibility)</div>
+                    <div class="quality-item">Realistic timeline and resource allocation</div>
+                    <div class="quality-item">Quality criteria defined upfront (not discovered during drafting)</div>
+                    <div class="quality-item">Technical Committee validation secured early</div>
+                    <div class="quality-item">Framework currency verified (not proceeding with outdated frameworks)</div>
+                    <div class="quality-item">Multi-framework integration logic clear and documented</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage1')">← Previous: Scoping & Concept</button>
+                <button onclick="showStage('stage3b')" class="secondary">Next: Internal Drafting →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 3A -->
+        <div id="stage3a" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 3A: External Drafting</h2>
+                <p>Writing team guides external consultants</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage3a-memory">External writer contact details and expertise areas: [List of specialist writers, their technical domains]
+Template decision: [E&PC vs ASK - confirmed by Technical Committee]
+Quality standards and compliance checklist: [FSO requirements provided to external writers]
+Feedback patterns across drafts: [Common issues identified, systematic corrections needed]
+Consistency requirements across multiple writers: [Terminology, assessment language, formatting standards]
+Version control for 100+ units: [Tracking system, revision cycles, approval status]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage3a-instructions">Guide external specialist writers by:
+1. Providing comprehensive briefing pack (templates, compliance requirements, quality standards, exemplars)
+2. Supplying all reference materials (regulatory docs, frameworks, Australian Standards, previous units)
+3. Conducting regular check-ins (early draft review, NOT waiting for completion - identify issues early)
+4. Coordinating consistency across multiple writers (shared glossary, terminology alignment)
+5. Systematic QA of returned drafts (using established checklists)
+6. Managing revision cycles efficiently (clear feedback, specific corrections, timeline adherence)
+
+Critical Success Factors for External Drafting:
+- Comprehensive upfront briefing (prevents wasted effort and major rework)
+- Exemplar units provided (quality standard visible, not just described)
+- Regular coordination meetings (multiple writers stay aligned)
+- Early draft review (catch issues before full completion)
+- Clear feedback loops (specific, actionable, prioritised)
+- Realistic timelines (account for revision cycles)
+
+Common Pitfalls to Avoid:
+- Insufficient briefing leading to wrong format/approach
+- Missing reference materials causing incorrect regulatory citations
+- Late-stage discovery requiring major rework
+- Inconsistent terminology across different writers
+- Unrealistic Assessment Conditions (equipment RTOs can't access)
+- Technical currency prioritised over VET compliance
+- UEE/ICT overlap unnoticed (external writers don't know other JSC units)</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Coordinate external technical experts to draft high-quality, compliant units</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Scoping report with categorised units (which 125 units need updating)</li>
+                        <li>Responsibility assignment (which writers handle which units based on technical expertise)</li>
+                        <li>Template decision from Technical Committee (E&PC or ASK format)</li>
+                        <li>All reference materials (regulatory documents, Australian Standards, frameworks)</li>
+                        <li>Quality criteria and exemplar units (showing expected standard)</li>
+                        <li>Feedback Log from scoping (stakeholder input by training product)</li>
+                        <li>Superseded unit lists (what needs replacing with current equivalents)</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Draft units (TPOF compliant structure)</li>
+                        <li>Updated content including:
+                            <ul>
+                                <li>Current technology (5G, IoT, AI, LEOS, PoE, IPv6/SDN)</li>
+                                <li>Regulatory compliance (ACMA Cabling Provider Rules 2025)</li>
+                                <li>Current standards (AS/NZS 14763.2, AS 61935, Australian Standards S009)</li>
+                                <li>Safety requirements (fire protection, confined spaces, working at heights - updated)</li>
+                                <li>Workplace currency (actual industry practices, not outdated methods)</li>
+                            </ul>
+                        </li>
+                        <li>Documentation of changes made (what was updated and why)</li>
+                        <li>Self-QA from external writers (initial quality checking)</li>
+                        <li>Ready for Integration Writing Team QA (systematic review)</li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Insufficient briefing to external writers (expectations unclear, quality standards unknown)</li>
+                        <li>Template/format confusion (E&PC vs ASK not clarified, results in wrong format)</li>
+                        <li>Missing reference materials (regulatory docs not final, standards outdated)</li>
+                        <li>Inconsistent quality across writers (some excellent, others requiring substantial rework)</li>
+                        <li>Late-stage discovery of major issues (fundamental problems found at final submission)</li>
+                        <li>Assessment Conditions unrealistic for RTOs (specifying equipment/resources not available)</li>
+                        <li>UEE/ICT overlap unidentified (external writers don't know about 19 UEE units overlapping with 18 ICT units)</li>
+                        <li>Regulatory misinterpretation (ACMA rules applied incorrectly, mandatory vs guidance confused)</li>
+                        <li>Safety requirements incomplete (fire protection, confined spaces, working at heights partially addressed)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF ASK template requirements (structure, sections, compliance rules)</li>
+                    <li>AQF level descriptors and appropriate complexity expectations</li>
+                    <li>Training Package Products Policy compliance</li>
+                    <li>Assessment principles and Rules of Evidence (validity, reliability, fairness, flexibility, sufficiency, authenticity, currency)</li>
+                    <li>Australian Government Style Manual compliance</li>
+                    <li>FSO brand guidelines application (Montserrat typography, colour palette, Australian English spelling)</li>
+                    <li>Quality assurance frameworks and systematic review processes</li>
+                    <li>External writer coordination and feedback management</li>
+                    <li>Version control and change tracking across multiple drafts</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Sector regulatory requirements deep knowledge (ACMA for telco, ASIC/APRA for finance)</li>
+                    <li>Australian Standards expertise (sector-specific - e.g., S009 ES1/ES2/ES3 for telecommunications)</li>
+                    <li>Technology currency assessment (what's current, emerging, or outdated in specific sector)</li>
+                    <li>Safety-critical requirements understanding (where relevant - network integrity, worker safety, community protection)</li>
+                    <li>Industry authenticity validation (workplace practices reflect actual industry operation)</li>
+                    <li>Cross-JSC awareness (identifying overlaps like UEE/ICT units requiring coordination)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF template requirements and detailed specifications</li>
+                    <li>AQF Handbook (relevant levels with detailed descriptors)</li>
+                    <li>Training Package Products Policy (current version)</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles (Validity, Reliability, Fairness, Flexibility)</li>
+                    <li>Rules of Evidence (Sufficiency, Authenticity, Currency)</li>
+                    <li>Australian Government Style Manual</li>
+                    <li>FSO brand guidelines (typography, colours, formatting)</li>
+                    <li>FSO glossary (standardised terminology)</li>
+                    <li>Change register template (for tracking modifications)</li>
+                    <li>External writer briefing pack template</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Scoping report with categorised units (R/D/U/FC action codes)</li>
+                    <li>Feedback Log (stakeholder input organised by training product)</li>
+                    <li>Superseded UoC list (units requiring replacement with current equivalents)</li>
+                    <li>Regulatory documentation:
+                        <ul>
+                            <li>ICT Telco: ACMA Cabling Provider Rules 2025, Explanatory Statement, ACMA CPR Pathways to Cabler Registration</li>
+                        </ul>
+                    </li>
+                    <li>Australian Standards specifications (sector-specific):
+                        <ul>
+                            <li>ICT Telco: AS/NZS 14763.2 (structured cabling), AS 61935 (testing standards), Australian Standards S009 (ES1, ES2, ES3)</li>
+                        </ul>
+                    </li>
+                    <li>Safety requirements documentation:
+                        <ul>
+                            <li>Fire protection standards</li>
+                            <li>Confined spaces regulations</li>
+                            <li>Working at heights requirements</li>
+                        </ul>
+                    </li>
+                    <li>Learning pathway analysis (CITT Telco Product Learning Pathways Report)</li>
+                    <li>Sample UoCs with wording analysis (exemplars showing quality expectations)</li>
+                    <li>Design and Structural Considerations (TPOF Reform implications)</li>
+                    <li>Victorian trial qualifications (22586VIC - when relevant for benchmarking)</li>
+                    <li>Additional Industry Related Materials</li>
+                    <li>Current ICT units (for consistency checking)</li>
+                    <li>UEE units (for overlap awareness - 19 UEE units overlapping with 18 ICT units)</li>
+                    <li>Technology roadmaps (5G, IoT, AI, LEOS, PoE, IPv6/SDN evolution)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">All external writers properly briefed upfront (comprehensive materials, clear expectations)</div>
+                    <div class="quality-item">Comprehensive reference materials provided (regulatory, standards, exemplars)</div>
+                    <div class="quality-item">Regular check-ins conducted (not just final submission)</div>
+                    <div class="quality-item">Consistent quality across writers (terminology aligned, standards maintained)</div>
+                    <div class="quality-item">TPOF compliance verified (structure, sections, format correct)</div>
+                    <div class="quality-item">AQF level appropriate (language and complexity match intended level)</div>
+                    <div class="quality-item">Assessment validity confirmed (Performance Evidence observable/measurable, Knowledge Evidence appropriate depth)</div>
+                    <div class="quality-item">Realistic conditions for RTOs (equipment/resources actually available, environments achievable)</div>
+                    <div class="quality-item">No duplication or overlap (especially UEE/ICT awareness maintained)</div>
+                    <div class="quality-item">Regulatory compliance verified (ACMA rules, Australian Standards correctly applied)</div>
+                    <div class="quality-item">Safety requirements complete (fire protection, confined spaces, working at heights fully addressed)</div>
+                    <div class="quality-item">Technology currency confirmed (current practices, not outdated methods)</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage2a')">← Previous: External Scoping</button>
+                <button onclick="showStage('stage4')" class="secondary">Next: QA & Compliance →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 3B -->
+        <div id="stage3b" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 3B: Internal Drafting</h2>
+                <p>Writing team authors units</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage3b-memory">Framework mapping decisions: [How DigComp 80 elements consolidate into 39 VET units, ASFI five capabilities into 21 units]
+Coding system logic: [K1-K13 (Knowledge), S1-S6 (Skills), PE1-PE4 (Performance Evidence) - transparent audit trail]
+"Lego to duplo" evolution: [Simplification without functionality loss - examples of refinement across iterations]
+Horizontal then vertical development approach: [Complete all Foundation units before starting Intermediate]
+Technical Committee feedback patterns: [Common themes, systematic improvements applied across units]
+Iterative quality improvements: [Learning from unit 1 applied to units 2-20, visible quality evolution]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage3b-instructions">Author complete units by:
+1. Working horizontally by AQF level first (all Foundation complete before Intermediate - ensures consistency)
+2. Applying systematic framework mapping with transparent coding (K1-K13, S1-S6, PE1-PE4 shows assessors the connection)
+3. Using established methodology ("lego to duplo" simplification, consolidation ratios documented)
+4. Self-QA during drafting (continuous checking against framework, AQF, TPOF - not waiting until end)
+5. Documenting all decisions in change registers (what changed, why, impact on related units)
+6. Iterative refinement (each unit teaches lessons applied to next unit - visible quality evolution)
+
+Framework Translation Methodology:
+- Explicit, transparent mapping (every K/S statement traces to framework elements)
+- Coding systems provide audit trail (assessors see framework alignment)
+- Complete coverage without duplication (all framework elements addressed, no gaps, no redundancy)
+- Attitudes integration (convert framework attitudes to observable Skills at Advanced/Highly Specialised levels)
+- Cross-sector applicability (contextualisation examples span healthcare, construction, retail, hospitality, manufacturing, education)
+
+Development Sequence (Digital Capability Example):
+Phase 1: Foundation units (AQF 2) - 5 Generalist + establish quality standard
+Phase 2: Intermediate units (AQF 3) - build on Foundation pattern
+Phase 3: Advanced units (AQF 4) - strategic application emerges
+Phase 4: Highly Specialised units (AQF 5) - leadership/innovation focus
+Phase 5: Vertical progression verification - ensure clear development across levels
+Phase 6: Comprehensive alignment review - all units against all frameworks
+
+Self-QA Checklist During Drafting:
+□ Framework alignment: Every statement maps to specific framework element
+□ AQF level appropriate: Verbs match level descriptors, complexity appropriate
+□ Internal consistency: Application descriptor promises what content delivers
+□ Observable Performance Evidence: Using "demonstrate," "apply," "implement" (not "understand," "appreciate")
+□ Realistic Assessment Conditions: RTOs can actually provide resources/environments
+□ Plain English: Jargon explained, accessible language, concise
+□ Cross-unit consistency: Same concept = same term, prerequisites logical</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Author complete, compliant units through systematic framework translation</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Complete unit structure from Internal Scoping (all codes, titles, application descriptions)</li>
+                        <li>Framework specifications (DigComp 3.0 complete, ASFI Capability Framework, DEC AI Literacy, Cybersecurity Skills Framework)</li>
+                        <li>Development matrices and mapping logic (how framework elements consolidate)</li>
+                        <li>Phased development plan (sequence and timeline)</li>
+                        <li>Quality criteria established (what "good" looks like defined upfront)</li>
+                        <li>Previous exemplar units (if available from earlier phases or other projects)</li>
+                        <li>Regulatory documentation (sector-specific compliance requirements)</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Complete drafted units (TPOF ASK template compliant):
+                            <ul>
+                                <li>Unit code and title</li>
+                                <li>Application (descriptor of skills/knowledge and work contexts)</li>
+                                <li>Application, Skills, Knowledge (ASK template sections)</li>
+                                <li>Foundation Skills (explicit mapping)</li>
+                                <li>Assessment Requirements (Performance Evidence, Knowledge Evidence, Assessment Conditions)</li>
+                                <li>Unit Mapping Information (links to other units, equivalencies)</li>
+                            </ul>
+                        </li>
+                        <li>Framework mapping documentation (transparent audit trail)</li>
+                        <li>Change registers (comprehensive modification tracking - what changed, why, when, impact)</li>
+                        <li>Self-QA documentation (verification performed during drafting)</li>
+                        <li>Coding system transparent (K1-K13, S1-S6, PE1-PE4 shows framework alignment)</li>
+                        <li>Ready for QA & Compliance stage (systematic validation)</li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Framework alignment drift (loses connection to source framework, consolidation without rationale)</li>
+                        <li>AQF level inappropriate (language says "AQF 4" but complexity is actually AQF 3, or vice versa)</li>
+                        <li>Internal inconsistency (Application promises capability that ASK sections don't deliver)</li>
+                        <li>Assessment validity issues (Performance Evidence not observable, Assessment Conditions unrealistic)</li>
+                        <li>Cross-unit terminology inconsistency (same concept using different terms across units)</li>
+                        <li>Vertical progression gaps (Foundation → Intermediate jump too big, or plateau with no advancement)</li>
+                        <li>Multi-framework integration confusion (80% DigComp + 20% AI + 20% Cybersecurity overlap unclear)</li>
+                        <li>Attitudes integration failure (framework attitudes not converted to observable Skills)</li>
+                        <li>Working solo limitations (can't see own assumptions, terminology drift unnoticed, complexity creep undetected)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF ASK template mastery (structure, requirements, section specifications)</li>
+                    <li>AQF level descriptors deep knowledge (Levels 2-5 autonomy, complexity, depth/breadth characteristics)</li>
+                    <li>Assessment design expertise (creating observable, measurable, authentic evidence requirements)</li>
+                    <li>Framework analysis and systematic translation capability</li>
+                    <li>Systematic simplification methodology ("lego to duplo" without losing functionality)</li>
+                    <li>Iterative refinement capability (learning from each unit, applying improvements to next)</li>
+                    <li>Self-QA rigour (compensating for lack of external validation during drafting)</li>
+                    <li>Change register documentation discipline</li>
+                    <li>Plain English writing (accessibility, conciseness, clarity)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Source framework deep expertise:
+                        <ul>
+                            <li>Digital: DigComp 3.0 complete structure (5 competence areas, 4 proficiency levels, 80+ elements), proficiency descriptors (Basic, Intermediate, Advanced, Highly Advanced)</li>
+                            <li>Finance: ASFI Capability Framework (5 core capabilities, 3 proficiency levels, Knowledge and Abilities structure)</li>
+                        </ul>
+                    </li>
+                    <li>Multi-framework integration expertise:
+                        <ul>
+                            <li>Digital: DigComp (80%) + DEC AI Literacy (20%) + Cybersecurity Skills (20%) with overlap logic</li>
+                            <li>Finance: ASFI + ISSB + TCFD + TNFD coherent integration</li>
+                        </ul>
+                    </li>
+                    <li>Cross-sector contextualisation (providing diverse industry examples):
+                        <ul>
+                            <li>Digital: Healthcare, construction, retail, hospitality, manufacturing, education applications</li>
+                            <li>Finance: Banking, investment management, insurance, accounting sector applications</li>
+                        </ul>
+                    </li>
+                    <li>Regulatory compliance deep knowledge (sector-specific):
+                        <ul>
+                            <li>Finance: Treasury Laws Amendment Act, ASRS, ASIC disclosure requirements, APRA CPS 229</li>
+                        </ul>
+                    </li>
+                    <li>Cultural competence:
+                        <ul>
+                            <li>First Nations co-design protocols (Sustainable Finance: FPIC principles, economic self-determination)</li>
+                            <li>Accessibility and inclusive design principles</li>
+                        </ul>
+                    </li>
+                    <li>Attitudes integration expertise (converting framework attitudes to observable VET Skills at higher levels)</li>
+                    <li>RPL pathway design (vertical progressive units, flexible entry/exit points)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF ASK template requirements (detailed specifications for each section)</li>
+                    <li>AQF Handbook (Levels 2-5) - comprehensive level descriptors with examples</li>
+                    <li>Training Package Products Policy (current version)</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles (Validity, Reliability, Fairness, Flexibility)</li>
+                    <li>Rules of Evidence (Sufficiency, Authenticity, Currency)</li>
+                    <li>Australian Government Style Manual - Plain English, accessibility, inclusive language</li>
+                    <li>FSO brand guidelines (Montserrat typography, colour palette #000000, #FF4200, #FFFFFF, #EAEAEA, #17396F, #EA9B3A, Australian English spelling)</li>
+                    <li>FSO glossary (standardised terminology - e.g., "AQF Level" vs "proficiency level" distinction)</li>
+                    <li>Change register template</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Complete framework specifications (full detail, not summaries):
+                        <ul>
+                            <li>Digital projects: DigComp 3.0 complete specification (all elements, proficiency descriptors), DEC AI Literacy Framework (five dimensions with progression), Cybersecurity Skills Framework (threat awareness, protection, response)</li>
+                            <li>Finance projects: ASFI Capability Framework complete specification (five core capabilities: Strategy, Risk Management, Products, Reporting, Mindset), ISSB Standards (IFRS S1, S2), TCFD Recommendations, TNFD Framework</li>
+                        </ul>
+                    </li>
+                    <li>Regulatory documentation (sector-specific):
+                        <ul>
+                            <li>Finance: Treasury Laws Amendment Act (mandatory climate disclosure legislation), ASRS (Australian Sustainability Reporting Standards), ASIC guidance (disclosure obligations), APRA CPS 229 (climate financial risk requirements)</li>
+                        </ul>
+                    </li>
+                    <li>Australian Standards (sector-specific when relevant)</li>
+                    <li>Target qualification packaging rules (which qualifications will include these units as electives):
+                        <ul>
+                            <li>Digital: BSB Training Package integration</li>
+                            <li>Finance: FNS40222, FNS50222, FNS60222 Certificate IV/Diploma/Advanced Diploma in Accounting, BSB50920 Diploma of Quality Auditing</li>
+                        </ul>
+                    </li>
+                    <li>Previous exemplar units (from earlier phases - e.g., first 20 Digital Capability units inform next 19)</li>
+                    <li>International comparison documentation (Singapore, Ireland, UK frameworks for benchmarking adaptation approaches)</li>
+                    <li>Industry glossaries (sector-specific terminology):
+                        <ul>
+                            <li>Finance: Sustainable finance terms, ESG definitions, climate risk taxonomy</li>
+                            <li>Digital: AI/ML terminology, cybersecurity concepts, digital platform types</li>
+                        </ul>
+                    </li>
+                    <li>Cultural validation protocols:
+                        <ul>
+                            <li>First Nations co-design requirements (Sustainable Finance: integrated units addressing economic self-determination)</li>
+                        </ul>
+                    </li>
+                    <li>Framework comparison tables (showing how elements map across international/industry frameworks and VET structure)</li>
+                    <li>Consolidation ratio documentation (Digital: 80 DigComp elements → 39 units with systematic approach)</li>
+                    <li>Multi-framework integration logic documentation (how 80% + 20% + 20% works, overlaps identified, gaps managed)</li>
+                    <li>Cross-sector application examples (specific scenarios for diverse industries)</li>
+                    <li>Previous framework versions (e.g., DigComp 2.2 for understanding transition rationale to 3.0)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">Explicit, transparent framework mapping (every K/S statement traces to framework elements)</div>
+                    <div class="quality-item">AQF level-appropriate language and complexity (verbs match descriptors, tasks appropriate)</div>
+                    <div class="quality-item">Observable, measurable Performance Evidence (using "demonstrate," "apply," "implement" not "understand," "appreciate")</div>
+                    <div class="quality-item">Realistic Assessment Conditions (resources RTOs can provide, environments achievable, timeframes reasonable)</div>
+                    <div class="quality-item">Clear, accessible language (Plain English, jargon explained, straightforward sentences)</div>
+                    <div class="quality-item">Internal consistency (Application descriptor aligns with ASK content delivered)</div>
+                    <div class="quality-item">Cross-unit consistency (same concept = same term, FSO glossary applied, prerequisites logical)</div>
+                    <div class="quality-item">Systematic quality (change registers maintained, Technical Committee feedback addressed, compliance verified)</div>
+                    <div class="quality-item">Iterative excellence (visible learning, later units more refined, methodology documentation shows evolution)</div>
+                    <div class="quality-item">Complete framework coverage (all elements addressed, no gaps)</div>
+                    <div class="quality-item">No unintended duplication (consolidation rationale clear)</div>
+                    <div class="quality-item">Strategic coherence (fits pathway, prerequisites logical, progression clear)</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage2b')">← Previous: Internal Scoping</button>
+                <button onclick="showStage('stage4')" class="secondary">Next: QA & Compliance →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 4 -->
+        <div id="stage4" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 4: QA & Compliance</h2>
+                <p>Mandatory convergence point - all paths meet here</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage4-memory">Path taken: [External Drafting or Internal Drafting]
+Technical Committee feedback history: [Systematic feedback patterns, key themes identified]
+Change register comprehensive tracking: [All modifications documented with rationale]
+Identified patterns: [What issues repeat across units - e.g., "guidance and supervision" overuse, AQF verb misalignment]
+Quality evolution across review cycles: [Improvements from first to final review]
+Compliance verification status: [TPOF ✓, AQF ✓, Framework alignment ✓, Assessment validity ✓]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage4-instructions">Conduct systematic quality assurance through multiple layers:
+
+Layer 1: Self-QA During Drafting
+- Framework alignment checking (every Knowledge/Skills statement traced back to framework elements)
+- AQF level verification (verbs checked against descriptors)
+- Internal consistency checking (Application promises what unit delivers)
+- Iterative adjustment until alignment achieved
+
+Layer 2: Horizontal Alignment Review
+- All Foundation units (AQF 2) consistent complexity
+- All Intermediate units (AQF 3) consistent expectations  
+- All Advanced units (AQF 4) consistent sophistication
+- All Highly Specialised units (AQF 5) consistent strategic focus
+- Cross-unit consistency: terminology, assessment language, prerequisite relationships
+
+Layer 3: Vertical Progression Verification
+- Clear progression from Foundation → Advanced → Highly Specialised
+- Each level builds appropriately on previous
+- No gaps in capability development
+- No premature complexity jumps or plateaus
+
+Layer 4: Technical Committee Review
+- Systematic feedback integration (e.g., "more than one workplace context," AQF verb alignment, "guidance and supervision" removal)
+- Change registers document all modifications with rationale
+- Multiple review cycles until approval secured
+
+Layer 5: Comprehensive Alignment Review  
+- All units verified against source framework
+- All units verified against AQF descriptors
+- All units verified against TPOF requirements
+- Compliance report generated demonstrating readiness
+
+Sustainable Finance Six-Criteria Framework (Example):
+Every unit must pass six tests:
+1. ASFI Framework Alignment Check (maps to Knowledge and Abilities)
+2. AQF Level Appropriateness Check (complexity matches descriptors)
+3. Assessment Validity Check (observable, measurable, authentic)
+4. VET Compliance Check (TPOF, Training Package Products Policy, RTO Standards)
+5. Equity & Accessibility Check (language clear, culturally appropriate, no bias)
+6. Internal Consistency Check (Application aligns with content)
+
+ICT Telco External Drafting QA (Example):
+- Consistency checking across 125 units by multiple external writers
+- Terminology standardisation (same concept = same term)
+- Assessment language alignment ("more than one workplace context")
+- AQF level consistency (appropriate verbs and complexity)
+- Foundation Skills mapping verification
+- ACMA regulatory compliance (rules correctly applied)
+- Australian Standards properly referenced (AS/NZS correct numbers, not outdated)
+- Safety requirements complete (fire protection, confined spaces, working at heights)
+- UEE/ICT overlap identification (awareness of 19 UEE units overlapping with 18 ICT units)
+- Practical usability (Assessment Conditions realistic for RTOs)
+
+Quality Assurance is NOT:
+- Single end-point check (multiple layers, iterative)
+- Only Technical Committee responsibility (writing team owns primary QA)
+- Waiting until all units complete (progressive checking preferred)
+- Just compliance checking (also quality, consistency, usability)</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Validate all units meet compliance, quality, and framework requirements before finalisation</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Complete drafted units (from External Drafting Stage 3A or Internal Drafting Stage 3B)</li>
+                        <li>Change registers (if from Internal Drafting - comprehensive modification tracking)</li>
+                        <li>Self-QA documentation (initial quality checking performed)</li>
+                        <li>Framework mapping documentation (transparent audit trails)</li>
+                        <li>External writer self-QA (if from External Drafting path)</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Validated units (all pass compliance verification):
+                            <ul>
+                                <li>TPOF compliance confirmed</li>
+                                <li>AQF alignment verified</li>
+                                <li>Framework/standards alignment confirmed</li>
+                                <li>Assessment validity verified</li>
+                                <li>Internal consistency confirmed</li>
+                                <li>Cross-unit consistency verified</li>
+                            </ul>
+                        </li>
+                        <li>Comprehensive change registers (complete modification history, rationale clear, impact noted, version control, audit trail)</li>
+                        <li>Compliance reports:
+                            <ul>
+                                <li>TPOF compliance report with evidence</li>
+                                <li>AQF alignment report with verification</li>
+                                <li>Framework alignment report (DigComp, ASFI, sector-specific) with mapping</li>
+                                <li>Complete coverage verified (no gaps, no unintended duplication)</li>
+                            </ul>
+                        </li>
+                        <li>Alignment matrices:
+                            <ul>
+                                <li>Framework mapping tables (each unit mapped to specific framework elements)</li>
+                                <li>Coding system transparent (K1-K13, S1-S6, PE1-PE4 audit trail)</li>
+                                <li>Proficiency indicators aligned</li>
+                                <li>Coverage complete and systematic</li>
+                            </ul>
+                        </li>
+                        <li>Cross-unit consistency tables (terminology, prerequisites, assessment language, Foundation Skills)</li>
+                        <li>Technical Committee submission package:
+                            <ul>
+                                <li>Validated units ready for review</li>
+                                <li>Change registers (showing iterative refinement)</li>
+                                <li>Compliance reports (demonstrating readiness)</li>
+                                <li>Alignment matrices (proving framework fidelity)</li>
+                                <li>Status report (what's complete, in progress, issues encountered/resolved, decisions needed)</li>
+                            </ul>
+                        </li>
+                        <li>Validation records:
+                            <ul>
+                                <li>Technical expert validation documentation</li>
+                                <li>Industry SME validation records</li>
+                                <li>Cultural validation documentation (First Nations co-design for Sustainable Finance)</li>
+                                <li>External validation records (consultant feedback if applicable)</li>
+                            </ul>
+                        </li>
+                        <li>Readiness confirmation:
+                            <ul>
+                                <li>For Technical Committee: units, documentation, presentation materials ready</li>
+                                <li>For DEWR: milestone requirements met, compliance demonstrated</li>
+                                <li>For public consultation: quality sufficient for stakeholder review</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Framework misalignment not caught (units don't reflect source framework accurately)</li>
+                        <li>AQF inappropriateness not corrected (language says "AQF 4" but complexity is AQF 3)</li>
+                        <li>Assessment invalidity not fixed (Performance Evidence not observable, Conditions unrealistic)</li>
+                        <li>Inconsistencies not resolved (terminology varies, prerequisites illogical)</li>
+                        <li>Regulatory non-compliance not addressed (ACMA rules wrong, standards outdated)</li>
+                        <li>Issues discovered too late for efficient correction (fundamental problems at final review requiring major rework)</li>
+                        <li>Pattern issues not identified (same problem repeating across multiple units)</li>
+                        <li>Vertical progression problems undetected (gaps or jumps in capability development)</li>
+                        <li>Cross-sector applicability not verified (examples too narrow, contextualisation insufficient)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>TPOF compliance deep knowledge (template structure, section requirements, formatting rules)</li>
+                    <li>AQF level descriptors mastery (Levels 2-5 autonomy, complexity, depth/breadth detailed understanding)</li>
+                    <li>Assessment principles expertise (Validity, Reliability, Fairness, Flexibility - application not just knowledge)</li>
+                    <li>Rules of Evidence deep understanding (Sufficiency, Authenticity, Currency - verification capability)</li>
+                    <li>Training Package Products Policy compliance expertise</li>
+                    <li>Systematic QA approaches (multiple layers, progressive checking, pattern identification)</li>
+                    <li>Change register documentation rigour</li>
+                    <li>Compliance report generation capability</li>
+                    <li>Cross-unit consistency verification</li>
+                    <li>Internal consistency checking</li>
+                    <li>Technical Committee engagement and feedback integration</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Framework alignment verification (sector-specific):
+                        <ul>
+                            <li>Digital: DigComp 3.0 element mapping, proficiency level alignment, attitudes integration checking</li>
+                            <li>Finance: ASFI Capability Framework Knowledge and Abilities alignment, ISSB/TCFD/TNFD integration</li>
+                            <li>Telco: ACMA standards compliance, Australian Standards verification</li>
+                        </ul>
+                    </li>
+                    <li>Regulatory compliance expertise (sector-specific):
+                        <ul>
+                            <li>Telco: ACMA Cabling Provider Rules 2025, Australian Standards S009 (ES1, ES2, ES3), safety requirements (fire protection, confined spaces, working at heights)</li>
+                            <li>Finance: Treasury Laws Amendment Act, ASRS, ASIC disclosure requirements, APRA CPS 229</li>
+                        </ul>
+                    </li>
+                    <li>Industry authenticity assessment (workplace practices reflect actual operations)</li>
+                    <li>Cultural appropriateness validation (First Nations co-design verification when relevant)</li>
+                    <li>Technology currency verification (what's current vs outdated in specific sector)</li>
+                    <li>Multi-framework integration verification (e.g., DigComp + AI + Cybersecurity coherence, ASFI + ISSB + TCFD + TNFD alignment)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF requirements (complete specifications)</li>
+                    <li>AQF Handbook (Levels 2-5) - detailed level descriptors with examples</li>
+                    <li>Training Package Products Policy (current version)</li>
+                    <li>Standards for RTOs 2025</li>
+                    <li>Assessment Principles (Validity, Reliability, Fairness, Flexibility) - detailed application guidance</li>
+                    <li>Rules of Evidence (Sufficiency, Authenticity, Currency) - verification criteria</li>
+                    <li>Australian Government Style Manual - Plain English, accessibility, inclusive language</li>
+                    <li>FSO brand guidelines (Montserrat typography, colour palette, Australian English spelling standards)</li>
+                    <li>FSO glossary (standardised terminology - "AQF Level" vs "proficiency level," etc.)</li>
+                    <li>Change register template</li>
+                    <li>Compliance report template</li>
+                    <li>QA checklist template (when developed)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Complete framework specifications (full detail for verification):
+                        <ul>
+                            <li>Digital: DigComp 3.0 complete (all elements, proficiency descriptors), DEC AI Literacy Framework, Cybersecurity Skills Framework</li>
+                            <li>Finance: ASFI Capability Framework complete, ISSB Standards (IFRS S1, S2), TCFD, TNFD</li>
+                            <li>Telco: ACMA Cabling Provider Rules 2025, Australian Standards S009</li>
+                        </ul>
+                    </li>
+                    <li>Regulatory documentation (sector-specific for compliance checking):
+                        <ul>
+                            <li>Finance: Treasury Laws Amendment Act, ASRS, ASIC guidance, APRA CPS 229</li>
+                            <li>Telco: ACMA regulations, Explanatory Statements, safety standards</li>
+                        </ul>
+                    </li>
+                    <li>Framework mapping matrices (for verification)</li>
+                    <li>Coding system documentation (K1-K13, S1-S6, PE1-PE4 logic)</li>
+                    <li>Proficiency indicator tables (showing expected progression)</li>
+                    <li>Consolidation rationale documentation (e.g., 80 elements → 39 units systematic approach)</li>
+                    <li>Multi-framework integration logic documentation (e.g., 80% + 20% + 20% overlap management)</li>
+                    <li>All other units in project (for cross-unit consistency checking)</li>
+                    <li>Related units from other Training Packages (for broader consistency)</li>
+                    <li>Overlapping units from other JSCs (e.g., 19 UEE units overlapping with 18 ICT units)</li>
+                    <li>Sector-specific application examples (for contextualisation verification)</li>
+                    <li>Technical Committee feedback patterns from previous projects (learning from history)</li>
+                    <li>Exemplar units from this project (quality benchmark)</li>
+                    <li>Industry SME feedback (for authenticity validation)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">All units pass TPOF compliance (structure, sections, formatting correct)</div>
+                    <div class="quality-item">All units pass AQF alignment (verbs match level descriptors, complexity appropriate)</div>
+                    <div class="quality-item">All units pass framework/standards alignment (complete coverage, transparent mapping)</div>
+                    <div class="quality-item">Assessment validity confirmed (Performance Evidence observable/measurable, Knowledge Evidence appropriate depth, Assessment Conditions realistic)</div>
+                    <div class="quality-item">Internal consistency verified (Application descriptor aligns with ASK content)</div>
+                    <div class="quality-item">Cross-unit consistency verified (terminology standardised, prerequisites logical, assessment language aligned)</div>
+                    <div class="quality-item">Regulatory compliance confirmed (sector-specific rules correctly applied)</div>
+                    <div class="quality-item">Change registers comprehensive (all modifications documented with rationale, impact noted)</div>
+                    <div class="quality-item">Compliance reports complete with evidence (TPOF, AQF, framework alignment demonstrated)</div>
+                    <div class="quality-item">Technical Committee approval secured (formal endorsement, approval documentation)</div>
+                    <div class="quality-item">Vertical progression verified (clear capability development across levels)</div>
+                    <div class="quality-item">Horizontal alignment confirmed (within-level consistency)</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage3a')">← Previous: External Drafting</button>
+                <button onclick="showStage('stage3b')">← Previous: Internal Drafting</button>
+                <button onclick="showStage('stage5')" class="secondary">Next: Finalisation & Readiness →</button>
+            </div>
+        </div>
+
+        <!-- STAGE 5 -->
+        <div id="stage5" class="stage-detail">
+            <div class="stage-header">
+                <h2>Stage 5: Finalisation & Readiness</h2>
+                <p>Final polish, approval, accreditation, release</p>
+            </div>
+
+            <div class="section">
+                <h3>Project Memory</h3>
+                <textarea id="stage5-memory">Final approval status: [Technical Committee ✓ DEWR ✓ Ministerial ✓]
+Public consultation outcomes: [Key feedback themes, modifications made, resolution of stakeholder concerns]
+Final revisions completed: [List of final polish items addressed]
+Accreditation status: [Training Package Assurance approval, Ministerial endorsement secured]
+National Register listing details: [All units/qualifications/skill sets listed, release dates]
+CVIG completion status: [Companion Volume Implementation Guide published]
+Launch communications status: [RTO notifications sent, industry briefings completed, materials distributed]</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Custom Instructions</h3>
+                <textarea id="stage5-instructions">Complete finalisation through:
+
+1. Final Unit Polish
+- Language and accessibility final pass (Plain English verification, Australian English consistency, accessibility checking)
+- Final formatting (TPOF template compliance, FSO brand application - Montserrat, colours, Australian English spelling)
+- Cross-unit consistency final verification (terminology standardisation, assessment language standardisation)
+- Prerequisite and relationship verification (logical sequencing confirmed, Unit Mapping Information complete)
+
+2. Multi-Framework Integration Final Verification (Project-Specific)
+Sustainable Finance Example:
+- ASFI Framework alignment final check (all 21 units mapped)
+- Regulatory compliance final verification (Treasury Laws Amendment, ASIC, APRA, AASB)
+- Integrated vs Core unit coordination (duplication eliminated, clear delineation what's assessed where)
+
+3. Skill Set Finalisation (Project-Specific)
+Sustainable Finance Example:
+- Five proposed Skill Sets verified (Climate/Nature Risk, Reporting/Disclosure, Product Development, First Nations/Finance, Sector-Specific)
+- Unit combinations logical
+- Pathway into qualifications clear
+
+4. Qualification Integration Finalisation
+- Elective placement finalised (e.g., FNS40222, FNS50222, FNS60222, BSB50920)
+- Packaging rules verified
+- Skill Set structures aligned with Specialisation Streams (R13, R14 from ICT Telco)
+
+ICT Telco Qualification Packaging Example:
+- 1 Qualification Delete confirmed (ICT20219 removed)
+- 4 Qualifications Update finalised (ICT20319, ICT30524, ICT41219, ICT41119)
+- 32 Skill Sets reviewed and updated
+- UEE/ICT overlap resolution documented (PSO consultation outcomes)
+
+5. Documentation Package Completion
+- Change Registers finalised (comprehensive modification tracking complete)
+- Compliance Reports finalised (TPOF, AQF, framework alignment demonstrated with evidence)
+- Consultation Records finalised (consultation log complete, validation records complete)
+
+6. Implementation Support Materials Prepared
+- Companion Volume Implementation Guide (CVIG) development:
+  * Delivery strategies (teaching approaches, resource requirements, trainer capability, delivery modes)
+  * Assessment strategies (approaches, portfolio development, workplace assessment, simulation design, moderation)
+  * Contextualisation guidance (sector-specific examples, workplace scenarios, assessment variations, language modifications)
+  * Implementation planning guidance
+- RTO Resource Package (trainer guidance, assessor guidance)
+
+7. Presentation Materials for Technical Committee
+- Executive summary
+- Detailed presentation
+- Supporting slides
+
+8. Stakeholder Communication Materials
+- Project webpage updates
+- Email communications to RTOs
+- Industry body briefings
+
+9. Final Quality Gate
+- Final Internal Review (Writing Team) - complete set reviewed holistically, "fresh eyes" check
+- Leadership Team Review - strategic objectives achieved, risk assessment confirms readiness
+- Technical Committee Pre-Submission Briefing - informal preview, potential concerns identified proactively
+
+Critical Timeline Considerations:
+- Digital Capability: ~2 years scoping to accreditation (18+ months development/validation, 6-9 months consultation/accreditation)
+- Sustainable Finance: ~17 months scoping to accreditation (6 months drafting/validation, 11 months consultation/accreditation)
+- Public consultation windows immovable (April-July 2026 example)
+- DEWR milestone deadlines drive timeline backwards from final approval</textarea>
+            </div>
+
+            <div class="section">
+                <h3>Project Description</h3>
+                <div class="content-box">
+                    <p><strong>Core job:</strong> Finalise, approve, accredit, and launch training products</p>
+                    
+                    <h4>What comes in:</h4>
+                    <ul>
+                        <li>Validated units from QA & Compliance (Stage 4)</li>
+                        <li>Change registers finalised</li>
+                        <li>Compliance reports (TPOF, AQF, framework alignment)</li>
+                        <li>Technical Committee approval documentation</li>
+                        <li>Consultation records (validation workshops, SME feedback, industry input)</li>
+                        <li>Alignment matrices and mapping documentation</li>
+                    </ul>
+
+                    <h4>What goes out:</h4>
+                    <ul>
+                        <li>Accredited training products on National Register:
+                            <ul>
+                                <li>Digital Capability: 39 Units of Competency (4 Generalist, 5 Progressive, 20 Targeted, 10 additional)</li>
+                                <li>Sustainable Finance: 21 Units of Competency (12 core + 6 integrated + 3 specialist), 5 Skill Sets, Updated Qualifications (FNS40222, FNS50222, FNS60222, BSB50920)</li>
+                                <li>ICT Telco: 125 Updated Units, 4 Updated Qualifications, 1 Deleted Qualification, Updated Skill Sets</li>
+                            </ul>
+                        </li>
+                        <li>Each unit/qualification/skill set with: unique code, title, release date, superseded information, downloadable PDF</li>
+                        <li>Companion Volume Implementation Guide (CVIG):
+                            <ul>
+                                <li>Delivery guidance (teaching strategies, resource requirements, trainer capability, delivery modes)</li>
+                                <li>Assessment guidance (approaches, portfolio development, workplace assessment, simulation design, moderation)</li>
+                                <li>Contextualisation guidance (sector-specific examples, workplace scenarios, assessment variations, language modifications)</li>
+                                <li>Qualification packaging guidance</li>
+                            </ul>
+                        </li>
+                        <li>Project Documentation Archive:
+                            <ul>
+                                <li>Development documentation (scoping reports, development plans, phased approach records)</li>
+                                <li>Quality assurance documentation (change registers, compliance reports, validation records)</li>
+                                <li>Consultation documentation (strategy, consultation log, feedback synthesis, stakeholder reports)</li>
+                                <li>Approval documentation (Technical Committee approvals, DEWR milestone approvals, Ministerial endorsement)</li>
+                            </ul>
+                        </li>
+                        <li>Implementation Support Materials:
+                            <ul>
+                                <li>RTO Resource Package (trainer guidance, assessor guidance, marketing materials)</li>
+                                <li>Communications Products (launch communications, stakeholder briefings, media releases)</li>
+                            </ul>
+                        </li>
+                        <li>FSO Internal Products:
+                            <ul>
+                                <li>Lessons Learned Documentation (what worked, what could improve, transferable knowledge for future projects)</li>
+                                <li>Template and Tool Development (refined templates, QA tools, process documentation for reuse)</li>
+                            </ul>
+                        </li>
+                        <li>Long-Term Outputs:
+                            <ul>
+                                <li>Monitoring and Evaluation Framework (implementation monitoring, quality monitoring, review triggers)</li>
+                                <li>Review and Refresh Planning (currency monitoring, review schedule, continuous improvement pathways)</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Breaks downstream if:</h4>
+                    <ul>
+                        <li>Technical Committee concerns unresolved (substantive feedback not addressed, issues requiring resolution outstanding)</li>
+                        <li>DEWR milestone not met (approval documentation incomplete, evidence insufficient, timeline missed)</li>
+                        <li>Public consultation reveals major issues (substantive concerns requiring significant revisions, conflicting stakeholder feedback unresolved)</li>
+                        <li>CVIG not developed (RTOs lack implementation guidance, assessment approaches unclear, contextualisation not supported)</li>
+                        <li>Implementation support incomplete (trainer resources missing, assessor guidance inadequate, RTO capacity not addressed)</li>
+                        <li>Communications not ready (launch materials incomplete, stakeholder notifications not prepared, industry briefings not scheduled)</li>
+                        <li>Qualification packaging unclear (elective placement ambiguous, skill set structures not aligned, pathway logic not transparent)</li>
+                        <li>Late-stage discovery of issues (final review reveals problems, cascading fixes required, timeline compression)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Fixed Skills Required (Universal - All Projects)</h3>
+                <ul>
+                    <li>Final formatting compliance expertise (TPOF, FSO brand, Australian English)</li>
+                    <li>Documentation package assembly capability (organising comprehensive materials systematically)</li>
+                    <li>CVIG development expertise (delivery strategies, assessment strategies, contextualisation guidance)</li>
+                    <li>Approval pathway navigation (DEWR processes, Technical Committee protocols, Ministerial endorsement requirements)</li>
+                    <li>Stakeholder communications expertise (RTO engagement, industry briefings, clear messaging)</li>
+                    <li>Project documentation rigour (comprehensive records, lessons learned capture, knowledge transfer)</li>
+                    <li>Public consultation coordination (strategy development, feedback management, synthesis capability)</li>
+                    <li>National Register listing processes</li>
+                    <li>Training Package Assurance arrangements understanding</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Skills Required (Project-Specific)</h3>
+                <ul>
+                    <li>Sector-specific implementation guidance:
+                        <ul>
+                            <li>Digital: Cross-sector contextualisation (healthcare, construction, retail, hospitality, manufacturing, education)</li>
+                            <li>Finance: Banking, investment, insurance, accounting sector implementation</li>
+                            <li>Telco: Safety-critical delivery requirements, ACMA compliance for training</li>
+                        </ul>
+                    </li>
+                    <li>Qualification packaging expertise:
+                        <ul>
+                            <li>Understanding elective structures and packaging rules</li>
+                            <li>Skill Set development aligned with Specialisation Streams</li>
+                            <li>Pathway logic and RPL implications</li>
+                        </ul>
+                    </li>
+                    <li>RTO resource development (sector-appropriate trainer/assessor materials)</li>
+                    <li>Industry communication strategies (tailored to sector stakeholders)</li>
+                    <li>Multi-framework integration final verification (project-specific)</li>
+                    <li>Regulatory compliance final checking (sector-specific)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Universal Context Documents (Fixed)</h3>
+                <ul>
+                    <li>TPOF requirements (final compliance check)</li>
+                    <li>Training Package Products Policy</li>
+                    <li>Ministerial endorsement processes and requirements</li>
+                    <li>CVIG template/requirements and structure</li>
+                    <li>RTO Standards 2025 (for implementation guidance development)</li>
+                    <li>FSO brand guidelines (final application)</li>
+                    <li>National Register listing requirements and processes</li>
+                    <li>Training Package Assurance arrangements</li>
+                    <li>Public consultation protocols and templates</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Variable Context Documents (Project-Specific)</h3>
+                <ul>
+                    <li>Complete validated units (all units from Stage 4)</li>
+                    <li>Comprehensive change registers (complete modification history)</li>
+                    <li>Compliance reports (TPOF, AQF, framework alignment with evidence)</li>
+                    <li>Consultation records:
+                        <ul>
+                            <li>Consultation log (complete stakeholder engagement record)</li>
+                            <li>Validation workshop records (industry SME feedback, RTO input, employer perspectives)</li>
+                            <li>Public consultation feedback (synthesis and resolution documentation)</li>
+                        </ul>
+                    </li>
+                    <li>Technical Committee approval documentation (formal endorsement, meeting minutes, decision records)</li>
+                    <li>DEWR milestone documentation (Activity Proposal, milestone reports, approval correspondence)</li>
+                    <li>Qualification packaging documentation:
+                        <ul>
+                            <li>Elective placement specifications</li>
+                            <li>Skill Set structures and unit combinations</li>
+                            <li>Pathway logic and RPL guidance</li>
+                            <li>Specialisation Stream alignment (if applicable)</li>
+                        </ul>
+                    </li>
+                    <li>Framework mapping matrices (final versions)</li>
+                    <li>Sector-specific implementation examples:
+                        <ul>
+                            <li>Digital: Healthcare, construction, retail, hospitality, manufacturing, education scenarios</li>
+                            <li>Finance: Banking, investment, insurance, accounting workplace applications</li>
+                            <li>Telco: Safety-critical delivery contexts, ACMA-compliant training environments</li>
+                        </ul>
+                    </li>
+                    <li>Industry stakeholder lists (for communications and ongoing engagement)</li>
+                    <li>RTO capability analysis (where delivery challenges identified)</li>
+                    <li>Regulatory documentation (sector-specific - for CVIG development):
+                        <ul>
+                            <li>Finance: Treasury Laws, ASRS, ASIC, APRA requirements</li>
+                            <li>Telco: ACMA regulations, Australian Standards, safety requirements</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Quality Criteria</h3>
+                <div class="quality-criteria">
+                    <div class="quality-item">All units finalised and polished (language, formatting, consistency complete)</div>
+                    <div class="quality-item">Documentation package complete (change registers, compliance reports, consultation records comprehensive)</div>
+                    <div class="quality-item">Technical Committee approval secured (formal endorsement documented)</div>
+                    <div class="quality-item">DEWR milestone requirements met (all approvals received, documentation submitted)</div>
+                    <div class="quality-item">Public consultation completed successfully (feedback synthesised, issues resolved, stakeholder support confirmed)</div>
+                    <div class="quality-item">CVIG developed and published (delivery guidance, assessment strategies, contextualisation support complete)</div>
+                    <div class="quality-item">Implementation support materials ready (RTO resources, trainer guidance, assessor support)</div>
+                    <div class="quality-item">Accreditation achieved (Training Package Assurance approval, Ministerial endorsement secured)</div>
+                    <div class="quality-item">National Register listing complete (all units/qualifications/skill sets listed with correct details)</div>
+                    <div class="quality-item">Launch communications ready (RTO notifications, industry briefings, media materials prepared)</div>
+                    <div class="quality-item">Lessons learned documented (knowledge captured for future projects)</div>
+                    <div class="quality-item">Monitoring framework established (review triggers, currency monitoring, continuous improvement pathways)</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="showOverview()">Back to Overview</button>
+                <button onclick="showStage('stage4')">← Previous: QA & Compliance</button>
+                <button onclick="window.print()" class="secondary">Print Dashboard</button>
+                <button onclick="saveProgress()" class="secondary">Save Progress</button>
+            </div>
+        </div>
+
+        <button class="back-to-overview" onclick="showOverview()">⬆ Back to Overview</button>
+    </div>
+
+    <script>
+        // Show/hide stages
+        function showStage(stageId) {
+            // Hide all stages
+            document.querySelectorAll('.stage-detail').forEach(stage => {
+                stage.classList.remove('active');
+            });
+            // Hide overview
+            document.getElementById('workflowOverview').style.display = 'none';
+            // Show selected stage
+            document.getElementById(stageId).classList.add('active');
+            // Scroll to top
+            window.scrollTo(0, 0);
+            // Save current view
+            localStorage.setItem('currentView', stageId);
+        }
+
+        function showOverview() {
+            // Hide all stages
+            document.querySelectorAll('.stage-detail').forEach(stage => {
+                stage.classList.remove('active');
+            });
+            // Show overview
+            document.getElementById('workflowOverview').style.display = 'block';
+            // Scroll to top
+            window.scrollTo(0, 0);
+            // Save current view
+            localStorage.setItem('currentView', 'overview');
+        }
+
+        // Auto-save functionality
+        function saveProgress() {
+            const textareas = document.querySelectorAll('textarea');
+            const data = {};
+            textareas.forEach(textarea => {
+                data[textarea.id] = textarea.value;
+            });
+            localStorage.setItem('fso-workflow-data', JSON.stringify(data));
+            alert('Progress saved successfully!');
+        }
+
+        // Auto-load saved data
+        function loadProgress() {
+            const saved = localStorage.getItem('fso-workflow-data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(id => {
+                    const textarea = document.getElementById(id);
+                    if (textarea) {
+                        textarea.value = data[id];
+                    }
+                });
+            }
+            // Restore last view
+            const lastView = localStorage.getItem('currentView');
+            if (lastView && lastView !== 'overview') {
+                showStage(lastView);
+            }
+        }
+
+        // Auto-save every 30 seconds
+        setInterval(saveProgress, 30000);
+
+        // Load on page load
+        window.addEventListener('load', loadProgress);
+
+        // Export functionality
+        function exportData() {
+            const data = localStorage.getItem('fso-workflow-data');
+            if (data) {
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'fso-workflow-backup.json';
+                a.click();
+            }
+        }
+    </script>
+</body>
+</html>
